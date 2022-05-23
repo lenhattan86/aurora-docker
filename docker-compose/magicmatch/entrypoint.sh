@@ -10,9 +10,8 @@ mesos-log initialize --path="$LOGDB_FILE_PATH"
 echo "mesos-log initialize -- DONE"
 
 echo "magicmatch -- START"
-exec /usr/share/magicmatch/magicmatch \
-  -enable=${ENABLE_MAGICMATCH:-false} -port=8080 -is_local=true \
-  &> /usr/share/magicmatch/magicmatch.log &
+exec /usr/share/magicmatch/bin/debian/magicmatch 2>&1 | tee /usr/share/magicmatch/magicmatch.log &
+echo "magicmatch -- DONE"
 
 echo "aurora-scheduler -- START"
 exec /usr/share/aurora/bin/aurora-scheduler \
@@ -29,5 +28,4 @@ exec /usr/share/aurora/bin/aurora-scheduler \
   -thermos_executor_resources="$THERMOS_EXECUTOR_RESOURCES" \
   -thermos_executor_flags="$THERMOS_EXECUTOR_FLAGS" \
   -zk_endpoints="${ZK_ENDPOINTS:-127.0.0.1:2181}" \
-  -enable_magicmatch="${ENABLE_MAGICMATCH:-false}"
   $EXTRA_SCHEDULER_ARGS

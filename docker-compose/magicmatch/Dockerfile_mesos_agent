@@ -1,0 +1,11 @@
+FROM rdelvalle/mesos-agent:1.5.1
+
+### Install additional packages
+RUN apt-get update || true
+RUN apt-get install -y stress
+
+RUN useradd vagrant-0
+RUN useradd vagrant-1
+RUN useradd vagrant-2
+RUN useradd vagrant-3
+RUN useradd vagrant-4
