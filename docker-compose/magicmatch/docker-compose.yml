@@ -12,12 +12,12 @@ services:
     networks:
       aurora_cluster:
         ipv4_address: 192.168.33.2
-    # logging:
-    #   driver: none
+    logging:
+      driver: none
     # optional setup to run the test
     volumes: 
-    - /Users/nhatle/projects/magicmatch/australis:/australis 
-    - /Users/nhatle/projects/magicmatch/test:/test
+    - [path_having_australis_binary]:/australis 
+    - [path_having_test_scripts]:/test
 
   master:
     image: rdelvalle/mesos-master:1.5.1
@@ -96,7 +96,7 @@ services:
     pid: host
     ports:
     - "8081:8081"
-    - "9091:9090"
+    - "9090:9090"
     restart: on-failure
     environment:
       CLUSTER_NAME: test-cluster
@@ -110,25 +110,23 @@ services:
         -min_required_instances_for_sla_check=1
         -sla_aware_kill_non_prod=true
         -sla_non_prod_metrics=MEDIANS
-      # -offer_set_module=io.github.aurora.scheduler.offers.HttpOfferSetModule
-      # -http_offer_set_timeout=150ms
-      # -http_offer_set_max_retries=3
-      # -http_offer_set_endpoint=http://localhost:9090/v1/offerset
-      # -http_offer_set_task_fetch_interval=2secs
-      # -http_offer_set_filter_enabled=false
-      # -http_offer_set_max_starting_tasks_per_slave=100
-      # -task_assigner_modules=io.github.aurora.scheduler.scheduling.ProbabilisticPriorityAssignerModule
-      # -probabilistic_priority_assigner_exponent=1.0
-      # -probabilistic_priority_assigner_task_fetch_interval=2secs
+        -offer_set_module=io.github.aurora.scheduler.offers.HttpOfferSetModule
+        -http_offer_set_timeout=150ms
+        -http_offer_set_max_retries=3
+        -http_offer_set_endpoint=http://localhost:9090/v1/offerset
+        -http_offer_set_task_fetch_interval=2secs
+        -http_offer_set_filter_enabled=false
+        -http_offer_set_max_starting_tasks_per_slave=100
+        -task_assigner_modules=io.github.aurora.scheduler.scheduling.ProbabilisticPriorityAssignerModule
+        -probabilistic_priority_assigner_exponent=1.0
+        -probabilistic_priority_assigner_task_fetch_interval=2secs
     networks:
       aurora_cluster:
         ipv4_address: 192.168.33.7
     volumes:
       - /Users/nhatle/projects/aurora-scheduler/scheduler/dist/install/aurora-scheduler:/usr/share/aurora
-      - /Users/nhatle/projects/magicmatch/MagicMatch:/usr/share/magicmatch
-      - /Users/nhatle/projects/magicmatch/config/magicmatch:/etc/magicmatch 
-    # logging:
-    #   driver: none
+      - [path_having_magicmatch_binary]:/usr/share/magicmatch
+      - [path_having_magicmatch.yaml]:/etc/magicmatch 
 
     depends_on:
     - zk
@@ -136,74 +134,6 @@ services:
     - agent-one
     - agent-two
 
-  # aurora-two:
-  #   image: lenhattan86/aurora:1.3
-  #   pid: host
-  #   ports:  
-  #   - "8082:8081"
-  #   - "9092:9090"
-  #   restart: on-failure
-  #   environment:
-  #     CLUSTER_NAME: test-cluster
-  #     ZK_ENDPOINTS: "192.168.33.2:2181"
-  #     MESOS_MASTER: "zk://192.168.33.2:2181/mesos"
-  #     AURORA_HOME: /usr/share/aurora
-  #     LOGDB_FILE_PATH: /var/db/aurorax
-  #     MESOS_NATIVE_JAVA_LIBRARY: /usr/local/lib/libmesos.so
-  #     EXTRA_SCHEDULER_ARGS: >
-  #       -http_authentication_mechanism=NONE
-  #       -min_required_instances_for_sla_check=1
-  #       -offer_set_module=io.github.aurora.scheduler.offers.HttpOfferSetModule
-  #   networks:
-  #     aurora_cluster:
-  #       ipv4_address: 192.168.33.8
-  #   volumes:
-  #     - /Users/nhatle/projects/magicmatch/scheduler/dist/install/aurora-scheduler:/usr/share/aurora
-  #     - /Users/nhatle/go/src/github.paypal.com/PaaS/MagicMatch:/usr/share/magicmatch
-  #     - /Users/nhatle/projects/magicmatch/config:/etc/aurora-scheduler 
-  #   # logging:
-  #   #   driver: none
-
-  #   depends_on:
-  #   - zk
-  #   - master
-  #   - agent-one
-  #   - agent-two
-
-  # aurora-three:
-  #   image: lenhattan86/aurora:1.3
-  #   pid: host
-  #   ports:
-  #   - "8083:8081"
-  #   - "9093:9090"
-  #   restart: on-failure
-  #   environment:
-  #     CLUSTER_NAME: test-cluster
-  #     ZK_ENDPOINTS: "192.168.33.2:2181"
-  #     MESOS_MASTER: "zk://192.168.33.2:2181/mesos"
-  #     AURORA_HOME: /usr/share/aurora
-  #     LOGDB_FILE_PATH: /var/db/aurorax
-  #     MESOS_NATIVE_JAVA_LIBRARY: /usr/local/lib/libmesos.so
-  #     EXTRA_SCHEDULER_ARGS: >
-  #       -http_authentication_mechanism=NONE
-  #       -min_required_instances_for_sla_check=1
-  #       -offer_set_module=io.github.aurora.scheduler.offers.HttpOfferSetModule
-  #   networks:
-  #     aurora_cluster:
-  #       ipv4_address: 192.168.33.9
-  #   volumes:
-  #     - /Users/nhatle/projects/magicmatch/aurora/dist/install/aurora-scheduler:/usr/share/aurora
-  #     - /Users/nhatle/go/src/github.paypal.com/PaaS/MagicMatch:/usr/share/magicmatch
-  #     - /Users/nhatle/projects/magicmatch/config:/etc/aurora-scheduler 
-  #   # logging:
-  #   #   driver: none
-
-    depends_on:
-    - zk
-    - master
-    - agent-one
-    - agent-two
-      
 networks:
   aurora_cluster:
     driver: bridge

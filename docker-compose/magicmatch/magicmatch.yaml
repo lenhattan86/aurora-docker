@@ -1,0 +1,26 @@
+---
+port: 9090
+loglevel: info
+targetusage: 0.5
+threshold: 9999
+maxmetricsdelay: 60s
+dryrun: false
+
+agents:
+  provider: mesos
+
+metrics:
+  provider: random
+  interval: 60s
+
+deschedule:
+  enabled: false
+
+mesos:
+  oversubscription: 1.5
+  node: 192.168.33.3
+  port: 5050
+
+zookeeper:
+  endpoints: 
+  - 192.168.33.2:2181
